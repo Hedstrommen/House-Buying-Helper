@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import {
   LineChart,
-  ReferenceLine,
   Line,
   AreaChart,
   Area,
@@ -53,10 +52,12 @@ function App() {
   const [monthlyFee, setMonthlyFee] = useState(0)
   const [monthlyCosts, setMonthlyCosts] = useState(1500)
   const [currentMonthlyCosts, setCurrentMonthlyCosts] = useState(12000)
+  const [currentCostGrowthPct, setCurrentCostGrowthPct] = useState(2)
   const [valueGrowthPct, setValueGrowthPct] = useState(DEFAULT_GROWTH_PCT)
   const [numberOfOwners, setNumberOfOwners] = useState(2)
   const [otherCapitalIncome, setOtherCapitalIncome] = useState(0)
   const [scb, setScb] = useState<ScbState>({ fetching: false, value: null, failed: false })
+  const [selectedYear, setSelectedYear] = useState(1)
 
   const input: LoanInput = useMemo(
     () => ({
@@ -68,16 +69,18 @@ function App() {
       monthlyFee,
       monthlyCosts,
       currentMonthlyCosts,
+      currentCostGrowthPct,
       valueGrowthPct,
       numberOfOwners,
       otherCapitalIncome,
     }),
-    [housePrice, downPaymentPct, interestRates, loanTermYears, propertyType, monthlyFee, monthlyCosts, currentMonthlyCosts, valueGrowthPct, numberOfOwners, otherCapitalIncome],
+    [housePrice, downPaymentPct, interestRates, loanTermYears, propertyType, monthlyFee, monthlyCosts, currentMonthlyCosts, currentCostGrowthPct, valueGrowthPct, numberOfOwners, otherCapitalIncome],
   )
 
   const result = useMemo(() => calculate(input), [input])
   const scenarios = useMemo(() => calculateRateScenarios(input), [input])
   const firstYear = result.years[1] ?? result.years[0]
+  const selectedYearRow = result.years[Math.min(selectedYear, result.years.length - 1)]
 
   const loanToValue = housePrice > 0 ? (result.loanAmount / housePrice) * 100 : 0
 
@@ -101,10 +104,11 @@ function App() {
     year: y.year,
     houseValue: Math.round(y.houseValue),
     loanBalance: Math.round(y.loanBalance),
-    equity: Math.round(y.equity),
+    houseValue2: Math.round(y.houseValue),
     monthlyCost: Math.round(y.monthlyCostTotal),
     monthlyCostAfterTax: Math.round(y.monthlyCostAfterTax),
     difference: Math.round(y.monthlyDifference),
+    currentCost: Math.round(y.currentCostAtYear),
     interestCost: Math.round(y.interestCost),
     interestAfterTax: Math.round(y.interestAfterTax),
   }))
@@ -175,6 +179,13 @@ function App() {
         </div>
 
         <div className="field">
+          <label>{t.currentCostGrowth}</label>
+          <input type="number" value={currentCostGrowthPct} step={0.1}
+            onChange={(e) => setCurrentCostGrowthPct(Number(e.target.value))} />
+          <p className="hint">{t.currentCostGrowthHelp}</p>
+        </div>
+
+        <div className="field">
           <label>{t.interestRates}</label>
           {interestRates.map((rate, i) => (
             <div key={i} className="inline-field">
@@ -235,14 +246,26 @@ function App() {
         </div>
       </section>
 
-      <section className={`difference-box ${firstYear.monthlyDifference < 0 ? 'difference-cheaper' : 'difference-expensive'}`}>
-        <span className="difference-label">{t.compareWithToday}</span>
-        <span className={`difference-value ${signClass(firstYear.monthlyDifference)}`}>
-          {formatSigned(firstYear.monthlyDifference)} kr{t.perMonth}
+      <section className={`difference-box ${selectedYearRow.monthlyDifference < 0 ? 'difference-cheaper' : 'difference-expensive'}`}>
+        <span className="difference-label">{t.compareWithToday} · {t.year} {selectedYearRow.year}</span>
+        <span className={`difference-value ${signClass(selectedYearRow.monthlyDifference)}`}>
+          {formatSigned(selectedYearRow.monthlyDifference)} kr{t.perMonth}
         </span>
         <span className="difference-sub">
-          {formatSek(currentMonthlyCosts)} → {formatSek(firstYear.monthlyCostAfterTax)} · {firstYear.monthlyDifference < 0 ? t.cheaper : t.moreExpensive}
+          {t.currentMonthlyCosts}: {formatSek(selectedYearRow.currentCostAtYear)} → {formatSek(selectedYearRow.monthlyCostAfterTax)} · {selectedYearRow.monthlyDifference < 0 ? t.cheaper : t.moreExpensive}
         </span>
+        <input
+          className="year-slider"
+          type="range"
+          min={0}
+          max={result.years.length - 1}
+          value={selectedYearRow.year}
+          onChange={(e) => setSelectedYear(Number(e.target.value))}
+        />
+        <div className="slider-labels">
+          <span>0 {t.years}</span>
+          <span>{result.years.length - 1} {t.years}</span>
+        </div>
       </section>
 
       <section className="scenarios">
@@ -301,7 +324,7 @@ function App() {
             <Tooltip formatter={(v) => formatSek(Number(v))} />
             <Legend />
             <Area type="monotone" dataKey="loanBalance" name={t.loanBalance} stroke="#dc2626" fill="#dc262633" />
-            <Area type="monotone" dataKey="equity" name={t.equity} stroke="#16a34a" fill="#16a34a33" />
+            <Area type="monotone" dataKey="houseValue2" name={t.houseValue} stroke="#2563eb" fill="#2563eb33" />
           </AreaChart>
         </ResponsiveContainer>
 
@@ -316,17 +339,7 @@ function App() {
             <Line type="monotone" dataKey="monthlyCost" name={t.monthlyCostTotal} stroke="#2563eb" dot={false} />
             <Line type="monotone" dataKey="monthlyCostAfterTax" name={t.monthlyCostAfterTax} stroke="#16a34a" dot={false} />
             {currentMonthlyCosts > 0 && (
-              <ReferenceLine
-                y={currentMonthlyCosts}
-                stroke="#9333ea"
-                strokeDasharray="6 4"
-                label={{
-                  value: `${t.currentMonthlyCosts}: ${formatSek(currentMonthlyCosts)}`,
-                  position: 'insideTopLeft',
-                  fill: '#9333ea',
-                  fontSize: 11,
-                }}
-              />
+              <Line type="monotone" dataKey="currentCost" name={t.currentMonthlyCosts} stroke="#9333ea" strokeDasharray="6 4" dot={false} />
             )}
             <Line type="monotone" dataKey="difference" name={t.differenceColumn} stroke="#f59e0b" dot={false} />
           </LineChart>
@@ -355,7 +368,6 @@ function App() {
                 <th>{t.year}</th>
                 <th>{t.houseValue}</th>
                 <th>{t.loanBalance}</th>
-                <th>{t.equity}</th>
                 <th>{t.amortizationYear}</th>
                 <th>{t.interestCost}</th>
                 <th>{t.interestAfterTax}</th>
@@ -371,7 +383,6 @@ function App() {
                   <td>{y.year}</td>
                   <td>{formatSek(y.houseValue)}</td>
                   <td>{formatSek(y.loanBalance)}</td>
-                  <td>{formatSek(y.equity)}</td>
                   <td>{formatSek(y.amortizationTotal)}</td>
                   <td>{formatSek(y.interestCost)}</td>
                   <td>{formatSek(y.interestAfterTax)}</td>

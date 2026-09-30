@@ -7,6 +7,7 @@ export interface LoanInput {
   monthlyFee: number
   monthlyCosts: number
   currentMonthlyCosts: number
+  currentCostGrowthPct: number
   valueGrowthPct: number
   numberOfOwners: number
   otherCapitalIncome: number
@@ -16,7 +17,7 @@ export interface YearRow {
   year: number
   houseValue: number
   loanBalance: number
-  equity: number
+  currentCostAtYear: number
   amortizationTotal: number
   amortizationMonthly: number
   interestCost: number
@@ -80,6 +81,7 @@ export const calculate = (input: LoanInput): CalculationResult => {
   let balance = loanAmount
   let houseValue = input.housePrice
   const annuity = annuityPayment(loanAmount, input.interestRates[0], input.loanTermYears)
+  let currentCost = input.currentMonthlyCosts
 
   for (let y = 0; y <= input.loanTermYears; y++) {
     let yearAmortization = 0
@@ -94,6 +96,7 @@ export const calculate = (input: LoanInput): CalculationResult => {
         yearInterest += interestPortion
       }
       houseValue *= 1 + input.valueGrowthPct / 100
+      currentCost *= 1 + input.currentCostGrowthPct / 100
     }
     const taxReduction = calculateRanteavdrag(yearInterest, input.numberOfOwners, input.otherCapitalIncome)
     const monthlyTotal = annuity + input.monthlyFee + input.monthlyCosts
@@ -102,7 +105,7 @@ export const calculate = (input: LoanInput): CalculationResult => {
       year: y,
       houseValue,
       loanBalance: balance,
-      equity: houseValue - balance,
+      currentCostAtYear: currentCost,
       amortizationTotal: yearAmortization,
       amortizationMonthly: yearAmortization / 12,
       interestCost: yearInterest,
@@ -110,7 +113,7 @@ export const calculate = (input: LoanInput): CalculationResult => {
       taxReduction,
       monthlyCostTotal: monthlyTotal,
       monthlyCostAfterTax: monthlyTotalAfterTax,
-      monthlyDifference: monthlyTotalAfterTax - input.currentMonthlyCosts,
+      monthlyDifference: monthlyTotalAfterTax - currentCost,
       netIfSold: houseValue - balance,
     })
   }

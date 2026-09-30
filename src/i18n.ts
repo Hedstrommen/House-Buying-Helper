@@ -25,6 +25,8 @@ export interface TranslationKey {
   monthlyCosts: string
   currentMonthlyCosts: string
   currentMonthlyCostsHelp: string
+  currentCostGrowth: string
+  currentCostGrowthHelp: string
   valueGrowth: string
   valueGrowthHelp: string
   useScb: string
@@ -40,9 +42,9 @@ export interface TranslationKey {
   results: string
   yearlyDevelopment: string
   year: string
+  yearOf: string
   houseValue: string
   loanBalance: string
-  equity: string
   amortizationYear: string
   amortizationMonth: string
   interestCost: string
@@ -94,6 +96,8 @@ export const translations: Record<Lang, TranslationKey> = {
     monthlyCosts: 'Övriga boendekostnader / månad',
     currentMonthlyCosts: 'Din nuvarande månadskostnad',
     currentMonthlyCostsHelp: 'Vad du betalar i boende idag, för att jämföra med att köpa.',
+    currentCostGrowth: 'Ökning nuvarande kostnad (%/år)',
+    currentCostGrowthHelp: 'Standardökning för hyra, mat och övriga levnadskostnader.',
     valueGrowth: 'Förväntad värdeökning (%/år)',
     valueGrowthHelp: 'Medianökning för den svenska marknaden. Hämtas från SCB om möjligt.',
     useScb: 'Hämta senaste från SCB',
@@ -109,9 +113,9 @@ export const translations: Record<Lang, TranslationKey> = {
     results: 'Resultat',
     yearlyDevelopment: 'Utveckling per år',
     year: 'År',
+    yearOf: 'år',
     houseValue: 'Bostadens värde',
     loanBalance: 'Kvarvarande lån',
-    equity: 'Eget kapital',
     amortizationYear: 'Amortering / år',
     amortizationMonth: 'Amortering / månad',
     interestCost: 'Räntekostnad',
@@ -129,7 +133,7 @@ export const translations: Record<Lang, TranslationKey> = {
     summary: 'Sammanfattning',
     amortizationRequirement: 'Amorteringskrav',
     chartHouseValue: 'Bostadens värde',
-    chartLoanEquity: 'Lån och eget kapital',
+    chartLoanEquity: 'Lån och bostadens värde',
     chartMonthlyCost: 'Månadskostnad över tid',
     chartInterest: 'Räntekostnad per år',
     years: 'år',
@@ -161,6 +165,8 @@ export const translations: Record<Lang, TranslationKey> = {
     monthlyCosts: 'Other monthly housing costs',
     currentMonthlyCosts: 'Your current monthly cost',
     currentMonthlyCostsHelp: 'What you pay for housing today, to compare with buying.',
+    currentCostGrowth: 'Increase of current cost (%/year)',
+    currentCostGrowthHelp: 'Standard increase for rent, food and general living costs.',
     valueGrowth: 'Expected value growth (%/year)',
     valueGrowthHelp: 'Median increase for the Swedish market. Fetched from SCB when possible.',
     useScb: 'Fetch latest from SCB',
@@ -176,9 +182,9 @@ export const translations: Record<Lang, TranslationKey> = {
     results: 'Results',
     yearlyDevelopment: 'Yearly development',
     year: 'Year',
+    yearOf: 'year',
     houseValue: 'House value',
     loanBalance: 'Remaining loan',
-    equity: 'Equity',
     amortizationYear: 'Amortization / year',
     amortizationMonth: 'Amortization / month',
     interestCost: 'Interest cost',
@@ -196,7 +202,7 @@ export const translations: Record<Lang, TranslationKey> = {
     summary: 'Summary',
     amortizationRequirement: 'Amortization requirement',
     chartHouseValue: 'House value',
-    chartLoanEquity: 'Loan and equity',
+    chartLoanEquity: 'Loan and house value',
     chartMonthlyCost: 'Monthly cost over time',
     chartInterest: 'Interest cost per year',
     years: 'years',

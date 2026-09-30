@@ -244,6 +244,19 @@ tbody tr:hover {
   color: #6b7280;
 }
 
+.year-slider {
+  width: 100%;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
 .footer {
   margin-top: 2rem;
   padding-top: 1rem;
