@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Bostadsköpshjälpen</string>
+    <string name="title_activity_main">Bostadsköpshjälpen</string>
+    <string name="package_name">se.hedstrommen.bostadshjalpen</string>
+    <string name="custom_url_scheme">se.hedstrommen.bostadshjalpen</string>
+</resources>

@@ -1,0 +1,8 @@
+{
+  "appId": "se.hedstrommen.bostadshjalpen",
+  "appName": "Bostadsköpshjälpen",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false
+  }
+}
