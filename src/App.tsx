@@ -26,7 +26,8 @@ const formatSek = (n: number): string =>
 
 const formatPct = (n: number): string => n.toFixed(2) + '%'
 
-const signClass = (n: number): string => (n < 0 ? 'neg' : n > 0 ? 'pos' : '')
+
+const diffClass = (n: number): string => (n > 0 ? 'neg' : n < 0 ? 'pos' : '')
 
 const formatSigned = (n: number): string =>
   (n > 0 ? '+' : '') + formatSek(n).replace(' kr', '')
@@ -248,7 +249,7 @@ function App() {
 
       <section className={`difference-box ${selectedYearRow.monthlyDifference < 0 ? 'difference-cheaper' : 'difference-expensive'}`}>
         <span className="difference-label">{t.compareWithToday} · {t.year} {selectedYearRow.year}</span>
-        <span className={`difference-value ${signClass(selectedYearRow.monthlyDifference)}`}>
+        <span className={`difference-value ${diffClass(selectedYearRow.monthlyDifference)}`}>
           {formatSigned(selectedYearRow.monthlyDifference)} kr{t.perMonth}
         </span>
         <span className="difference-sub">
@@ -388,7 +389,7 @@ function App() {
                   <td>{formatSek(y.interestAfterTax)}</td>
                   <td>{formatSek(y.monthlyCostTotal)}</td>
                   <td>{formatSek(y.monthlyCostAfterTax)}</td>
-                  <td className={signClass(y.monthlyDifference)}>{formatSigned(y.monthlyDifference)}</td>
+                  <td className={diffClass(y.monthlyDifference)}>{formatSigned(y.monthlyDifference)}</td>
                   <td>{formatSek(y.netIfSold)}</td>
                 </tr>
               ))}
