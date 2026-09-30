@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   LineChart,
+  ReferenceLine,
   Line,
   AreaChart,
   Area,
@@ -103,6 +104,7 @@ function App() {
     equity: Math.round(y.equity),
     monthlyCost: Math.round(y.monthlyCostTotal),
     monthlyCostAfterTax: Math.round(y.monthlyCostAfterTax),
+    difference: Math.round(y.monthlyDifference),
     interestCost: Math.round(y.interestCost),
     interestAfterTax: Math.round(y.interestAfterTax),
   }))
@@ -313,6 +315,20 @@ function App() {
             <Legend />
             <Line type="monotone" dataKey="monthlyCost" name={t.monthlyCostTotal} stroke="#2563eb" dot={false} />
             <Line type="monotone" dataKey="monthlyCostAfterTax" name={t.monthlyCostAfterTax} stroke="#16a34a" dot={false} />
+            {currentMonthlyCosts > 0 && (
+              <ReferenceLine
+                y={currentMonthlyCosts}
+                stroke="#9333ea"
+                strokeDasharray="6 4"
+                label={{
+                  value: `${t.currentMonthlyCosts}: ${formatSek(currentMonthlyCosts)}`,
+                  position: 'insideTopLeft',
+                  fill: '#9333ea',
+                  fontSize: 11,
+                }}
+              />
+            )}
+            <Line type="monotone" dataKey="difference" name={t.differenceColumn} stroke="#f59e0b" dot={false} />
           </LineChart>
         </ResponsiveContainer>
 
