@@ -26,6 +26,11 @@ const formatSek = (n: number): string =>
 
 const formatPct = (n: number): string => n.toFixed(2) + '%'
 
+const signClass = (n: number): string => (n < 0 ? 'neg' : n > 0 ? 'pos' : '')
+
+const formatSigned = (n: number): string =>
+  (n > 0 ? '+' : '') + formatSek(n).replace(' kr', '')
+
 interface ScbState {
   fetching: boolean
   value: number | null
@@ -72,7 +77,7 @@ function App() {
   const result = useMemo(() => calculate(input), [input])
   const scenarios = useMemo(() => calculateRateScenarios(input), [input])
   const firstYear = result.years[1] ?? result.years[0]
-  const year0 = result.years[0]
+
   const loanToValue = housePrice > 0 ? (result.loanAmount / housePrice) * 100 : 0
 
   const fetchScb = async () => {
@@ -215,10 +220,6 @@ function App() {
           <span className="card-value">{formatSek(result.loanAmount)}</span>
         </div>
         <div className="card">
-          <span className="card-label">{t.downPaymentAmount}</span>
-          <span className="card-value">{formatSek(result.downPayment)}</span>
-        </div>
-        <div className="card">
           <span className="card-label">{t.monthlyCostTotal}</span>
           <span className="card-value">{formatSek(firstYear.monthlyCostTotal)}{t.perMonth}</span>
         </div>
@@ -228,8 +229,18 @@ function App() {
         </div>
         <div className="card">
           <span className="card-label">{t.netIfSold}</span>
-          <span className="card-value">{formatSek(year0.netIfSold)}</span>
+          <span className="card-value">{formatSek(firstYear.netIfSold)}</span>
         </div>
+      </section>
+
+      <section className={`difference-box ${firstYear.monthlyDifference < 0 ? 'difference-cheaper' : 'difference-expensive'}`}>
+        <span className="difference-label">{t.compareWithToday}</span>
+        <span className={`difference-value ${signClass(firstYear.monthlyDifference)}`}>
+          {formatSigned(firstYear.monthlyDifference)} kr{t.perMonth}
+        </span>
+        <span className="difference-sub">
+          {formatSek(currentMonthlyCosts)} → {formatSek(firstYear.monthlyCostAfterTax)} · {firstYear.monthlyDifference < 0 ? t.cheaper : t.moreExpensive}
+        </span>
       </section>
 
       <section className="scenarios">
@@ -255,22 +266,13 @@ function App() {
                   <td>{formatSek(s.monthlyInterest)}</td>
                   <td>{formatSek(s.monthlyAmortization)}</td>
                   <td>{formatSek(s.monthlyTotal)}</td>
-                  <td>{formatSek(s.monthlyTotalAfterTax)}</td>
-                  <td>{formatSek(s.taxReductionYear)}</td>
+                  <td className="pos">{formatSek(s.monthlyTotalAfterTax)}</td>
+                  <td className="pos">{formatSek(s.taxReductionYear)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </section>
-
-      <section className="compare">
-        <h2>{t.compareWithToday}</h2>
-        <p>
-          {formatSek(currentMonthlyCosts)} → {formatSek(firstYear.monthlyCostAfterTax)}{' '}
-          ({currentMonthlyCosts - firstYear.monthlyCostAfterTax >= 0 ? t.cheaper : t.moreExpensive}:
-          {' '}{formatSek(Math.abs(currentMonthlyCosts - firstYear.monthlyCostAfterTax))})
-        </p>
       </section>
 
       <section className="charts">
@@ -343,6 +345,7 @@ function App() {
                 <th>{t.interestAfterTax}</th>
                 <th>{t.monthlyCostTotal}</th>
                 <th>{t.monthlyCostAfterTax}</th>
+                <th>{t.differenceColumn}</th>
                 <th>{t.netIfSold}</th>
               </tr>
             </thead>
@@ -358,6 +361,7 @@ function App() {
                   <td>{formatSek(y.interestAfterTax)}</td>
                   <td>{formatSek(y.monthlyCostTotal)}</td>
                   <td>{formatSek(y.monthlyCostAfterTax)}</td>
+                  <td className={signClass(y.monthlyDifference)}>{formatSigned(y.monthlyDifference)}</td>
                   <td>{formatSek(y.netIfSold)}</td>
                 </tr>
               ))}

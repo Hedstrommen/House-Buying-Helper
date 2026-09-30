@@ -54,6 +54,7 @@ export interface TranslationKey {
   scenarioComparison: string
   compareWithToday: string
   difference: string
+  differenceColumn: string
   cheaper: string
   moreExpensive: string
   summary: string
@@ -122,6 +123,7 @@ export const translations: Record<Lang, TranslationKey> = {
     scenarioComparison: 'Jämförelse av räntor',
     compareWithToday: 'Jämförelse med din nuvarande kostnad',
     difference: 'Skillnad',
+    differenceColumn: 'Skillnad vs idag',
     cheaper: 'billigare',
     moreExpensive: 'dyrare',
     summary: 'Sammanfattning',
@@ -188,6 +190,7 @@ export const translations: Record<Lang, TranslationKey> = {
     scenarioComparison: 'Interest rate comparison',
     compareWithToday: 'Comparison with your current cost',
     difference: 'Difference',
+    differenceColumn: 'Difference vs today',
     cheaper: 'cheaper',
     moreExpensive: 'more expensive',
     summary: 'Summary',

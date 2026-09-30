@@ -24,6 +24,7 @@ export interface YearRow {
   taxReduction: number
   monthlyCostTotal: number
   monthlyCostAfterTax: monthlyCostAfterTaxType
+  monthlyDifference: number
   netIfSold: number
 }
 
@@ -109,6 +110,7 @@ export const calculate = (input: LoanInput): CalculationResult => {
       taxReduction,
       monthlyCostTotal: monthlyTotal,
       monthlyCostAfterTax: monthlyTotalAfterTax,
+      monthlyDifference: monthlyTotalAfterTax - input.currentMonthlyCosts,
       netIfSold: houseValue - balance,
     })
   }
